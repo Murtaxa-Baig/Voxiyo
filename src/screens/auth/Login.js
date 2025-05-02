@@ -5,13 +5,71 @@ import {
   TouchableOpacity,
   Image,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
-import React from 'react';
+import {useState, React} from 'react';
 import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import {theme} from '../../components/Theme';
+import {
+  auth,
+  getAuth,
+  signInWithCredential,
+  GoogleAuthProvider,
+} from '@react-native-firebase/auth';
+import storage from '../../utils/hooks/MmkvHook';
+import {useMMKVStorage} from 'react-native-mmkv-storage';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 export default function Login({navigation}) {
+  const [userInfo, setUserInfo] = useMMKVStorage('userInfo', storage);
+  const [loading, setLoading] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      // 1. Check Play Services
+      await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+
+      await GoogleSignin.signOut();
+
+      // 2. Sign in with Google
+      const {idToken, accessToken} = await GoogleSignin.signIn();
+
+      console.log('Id token is here', idToken);
+      console.log('Access token is here', accessToken);
+
+      // 3. Validate tokens
+      if (!idToken && !accessToken) {
+        throw new Error('No authentication tokens received');
+      }
+
+      // 4. Create credential using ONLY idToken
+      const credential = GoogleAuthProvider.credential(idToken);
+
+      // 5. Firebase authentication
+      const authInstance = getAuth();
+      const userCredential = await signInWithCredential(
+        authInstance,
+        credential,
+      );
+
+      // 6. Handle navigation
+      if (userCredential.additionalUserInfo?.isNewUser) {
+        console.log('New user registered');
+        // navigation.navigate('home');
+      } else {
+        console.log('Existing user');
+        // navigation.navigate('home');
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.log('Google Sign-In Error:', error);
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#000" translucent />
@@ -48,7 +106,11 @@ export default function Login({navigation}) {
       <TouchableOpacity
         onPress={() => navigation.navigate('full name')}
         style={styles.emailButton}>
-        <Text style={{color: '#000'}}>Continue with email</Text>
+        {loading ? (
+          <ActivityIndicator size="small" color="#000" />
+        ) : (
+          <Text style={{color: '#000'}}>Continue with email</Text>
+        )}
       </TouchableOpacity>
       <View
         style={{
@@ -64,7 +126,9 @@ export default function Login({navigation}) {
           style={{width: '43%', height: 1, backgroundColor: '#212529'}}></View>
       </View>
       <View style={styles.socialContainer}>
-        <TouchableOpacity style={styles.googleButton}>
+        <TouchableOpacity
+          style={styles.googleButton}
+          onPress={handleGoogleSignIn}>
           <SvgXml xml={Xmls.google} />
         </TouchableOpacity>
       </View>

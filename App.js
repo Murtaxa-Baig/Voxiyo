@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {ThemeProvider} from './src/components/Theme';
 import {NavigationContainer} from '@react-navigation/native';
 import SplashScreen from 'react-native-splash-screen';
@@ -9,8 +9,16 @@ import {
 } from 'react-native-safe-area-context';
 import {Platform, SafeAreaView, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {Web_Client_ID} from './urls';
 
 export default function App() {
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: `${Web_Client_ID}.apps.googleusercontent.com`,
+    });
+  }, []);
+
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ThemeProvider>

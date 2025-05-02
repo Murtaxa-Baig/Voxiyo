@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "701473948318",
+    "project_id": "voicenotes-44710",
+    "storage_bucket": "voicenotes-44710.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:701473948318:android:8ad660883eaa4d57f9b18f",
+        "android_client_info": {
+          "package_name": "com.voxiyo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "701473948318-5h3ko9cc53a16jl4rkg8jskob8abok25.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.voxiyo",
+            "certificate_hash": "16aa20c5a14c8492146a23074e5810c4a8860ae7"
+          }
+        },
+        {
+          "client_id": "701473948318-89f21dgg9pal4ab7vs54o5oj8cnf0kma.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.voxiyo",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "701473948318-sqtnmb307ultaihbndj3iqs40r0kkcdj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.voxiyo",
+            "certificate_hash": "2b2f28e94b2d8f8748c932addef9f53eb259d957"
+          }
+        },
+        {
+          "client_id": "701473948318-ig9fq744hs40cs7jmc30ck9a38fgk18j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB67pdQwQkj6mnNRdKZm4k7c2XVnTx0cIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "701473948318-ig9fq744hs40cs7jmc30ck9a38fgk18j.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "701473948318-mmkrrlo550cfi57pbi7b7s4359rs0cqf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.voxiyo",
+                "app_store_id": "6737908578"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
