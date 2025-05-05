@@ -7,68 +7,59 @@ import {
   StatusBar,
   ActivityIndicator,
 } from 'react-native';
-import {useState, React} from 'react';
+import {useState, React, useEffect} from 'react';
 import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import {theme} from '../../components/Theme';
-import {
-  auth,
-  getAuth,
-  signInWithCredential,
-  GoogleAuthProvider,
-} from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
 import storage from '../../utils/hooks/MmkvHook';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 export default function Login({navigation}) {
+  GoogleSignin.configure({
+    webClientId:
+      '499891627993-6d1c5hslvk6sja7orhdh41ac498n1tf5.apps.googleusercontent.com',
+    offlineAccess: false,
+  });
+
   const [userInfo, setUserInfo] = useMMKVStorage('userInfo', storage);
   const [loading, setLoading] = useState(false);
 
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
+  async function onGoogleButtonPress() {
     try {
-      // 1. Check Play Services
+      setLoading(true);
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+      // Get the user's ID token
+      const idToken = await GoogleSignin.signIn();
+      // console.log('idToken', idToken);
 
-      await GoogleSignin.signOut();
-
-      // 2. Sign in with Google
-      const {idToken, accessToken} = await GoogleSignin.signIn();
-
-      console.log('Id token is here', idToken);
-      console.log('Access token is here', accessToken);
-
-      // 3. Validate tokens
-      if (!idToken && !accessToken) {
-        throw new Error('No authentication tokens received');
-      }
-
-      // 4. Create credential using ONLY idToken
-      const credential = GoogleAuthProvider.credential(idToken);
-
-      // 5. Firebase authentication
-      const authInstance = getAuth();
-      const userCredential = await signInWithCredential(
-        authInstance,
-        credential,
+      // Create a Google credential with the token
+      const googleCredential = auth.GoogleAuthProvider.credential(
+        idToken?.data?.idToken,
       );
 
-      // 6. Handle navigation
-      if (userCredential.additionalUserInfo?.isNewUser) {
-        console.log('New user registered');
+      const response = await auth().signInWithCredential(googleCredential);
+      console.log('response', response.user);
+      if (response.user) {
+        const userData = {
+          name: response.user.displayName,
+          email: response.user.email,
+          photo: response.user.photoURL,
+          uid: response.user.uid,
+        };
+        console.log('userData', userData);
+        setUserInfo(userData);
         // navigation.navigate('home');
       } else {
-        console.log('Existing user');
-        // navigation.navigate('home');
+        console.log('User not found');
       }
-
       setLoading(false);
     } catch (error) {
-      console.log('Google Sign-In Error:', error);
+      console.log('Google Sign-In error:', error);
       setLoading(false);
     }
-  };
+  }
 
   return (
     <View style={styles.container}>
@@ -93,18 +84,18 @@ export default function Login({navigation}) {
         By continuing, I agree with the {'\n'}
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('terms and condition')}>
+            onPress={() => navigation.navigate('TermsAndCondition')}>
             <Text style={styles.link}>Terms & Conditions</Text>
           </TouchableOpacity>
           <Text style={{color: '#fff'}}> and </Text>
           <TouchableOpacity
-            onPress={() => navigation.navigate('privacy policy')}>
+            onPress={() => navigation.navigate('PrivacyPolicy')}>
             <Text style={styles.link}>Privacy Policy</Text>
           </TouchableOpacity>
         </View>
       </Text>
       <TouchableOpacity
-        onPress={() => navigation.navigate('full name')}
+        onPress={() => navigation.navigate('FullName')}
         style={styles.emailButton}>
         {loading ? (
           <ActivityIndicator size="small" color="#000" />
@@ -128,7 +119,7 @@ export default function Login({navigation}) {
       <View style={styles.socialContainer}>
         <TouchableOpacity
           style={styles.googleButton}
-          onPress={handleGoogleSignIn}>
+          onPress={() => onGoogleButtonPress()}>
           <SvgXml xml={Xmls.google} />
         </TouchableOpacity>
       </View>
@@ -139,7 +130,7 @@ export default function Login({navigation}) {
           marginBottom: 20,
         }}>
         <Text>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('login mail')}>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginEmail')}>
           <Text style={styles.link}>Log in</Text>
         </TouchableOpacity>
       </View>

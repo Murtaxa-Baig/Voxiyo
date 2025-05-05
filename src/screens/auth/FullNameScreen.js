@@ -14,6 +14,20 @@ import React, {useState} from 'react';
 export default function FullNameScreen({navigation}) {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+
+  const handleContinue = () => {
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError('You need to fill out the name');
+    } else if (trimmedName.length < 3) {
+      setError('You need to fill out the name');
+    } else {
+      setError('');
+      navigation.navigate('CountryScreen', {
+        userData: {fullName: trimmedName},
+      });
+    }
+  };
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" translucent />
@@ -29,7 +43,7 @@ export default function FullNameScreen({navigation}) {
             value={name}
             onChangeText={text => {
               setName(text);
-              if (error) setError(''); // clear error when typing
+              if (error) setError('');
             }}
           />
           {name.length < 3 ? null : (
@@ -46,17 +60,7 @@ export default function FullNameScreen({navigation}) {
       </View>
       <View style={{backgroundColor: '#fff'}}>
         <TouchableOpacity
-          onPress={() => {
-            const trimmedName = name.trim();
-            if (!trimmedName) {
-              setError('You need to fill out the name');
-            } else if (trimmedName.length < 3) {
-              setError('You need to fill out the name');
-            } else {
-              setError('');
-              navigation.navigate('country screen');
-            }
-          }}
+          onPress={() => handleContinue()}
           style={styles.continueButton}>
           <Text style={{color: '#000'}}>Continue</Text>
         </TouchableOpacity>

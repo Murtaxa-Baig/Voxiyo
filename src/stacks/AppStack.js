@@ -1,10 +1,18 @@
-import {View, Text} from 'react-native';
 import React from 'react';
+import {createStackNavigator} from '@react-navigation/stack';
+import Home from '../screens/app/Home';
+
+const Stack = createStackNavigator();
 
 export default function AppStack() {
   return (
-    <View>
-      <Text>AppStack</Text>
-    </View>
+    <Stack.Navigator
+      screenOptions={{
+        gestureEnabled: true,
+        gestureDirection: 'horizontal',
+        headerShown: false,
+      }}>
+      <Stack.Screen name="Home" component={Home} />
+    </Stack.Navigator>
   );
 }

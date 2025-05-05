@@ -1,4 +1,4 @@
-package com.voxiyo
+package com.testvoxiyo
 
 import android.app.Application
 import com.facebook.react.PackageList

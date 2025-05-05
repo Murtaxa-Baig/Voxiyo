@@ -23,14 +23,14 @@ export default function AuthStack() {
         headerShown: false,
       }}>
       <Stack.Screen name="login" component={Login} />
-      <Stack.Screen name="full name" component={FullNameScreen} />
-      <Stack.Screen name="country screen" component={CountryScreen} />
-      <Stack.Screen name="email screen" component={EmailScreen} />
-      <Stack.Screen name="password screen" component={PasswordSreen} />
-      <Stack.Screen name="terms and condition" component={TermsAndConditions} />
-      <Stack.Screen name="privacy policy" component={TermsAndConditions} />
-      <Stack.Screen name="login mail" component={LoginEmail} />
-      <Stack.Screen name="login password" component={LoginPassword} />
+      <Stack.Screen name="FullName" component={FullNameScreen} />
+      <Stack.Screen name="CountryScreen" component={CountryScreen} />
+      <Stack.Screen name="EmailScreen" component={EmailScreen} />
+      <Stack.Screen name="PasswordScreen" component={PasswordSreen} />
+      <Stack.Screen name="TermsAndCondition" component={TermsAndConditions} />
+      <Stack.Screen name="PrivacyPolicy" component={TermsAndConditions} />
+      <Stack.Screen name="LoginEmail" component={LoginEmail} />
+      <Stack.Screen name="LoginPassword" component={LoginPassword} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
       {/* <Stack.Screen name="SetNewPassword" component={SetNewPassword} /> */}

@@ -28,7 +28,9 @@ export default function LoginEmail({navigation}) {
       setError('Please enter a valid email');
     } else {
       setError('');
-      navigation.navigate('login password');
+      navigation.navigate('LoginPassword', {
+        userData: {email: trimmedEmail},
+      });
     }
   };
 

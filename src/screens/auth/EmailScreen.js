@@ -11,7 +11,7 @@ import {TextInput} from 'react-native-gesture-handler';
 import Xmls from '../../utils/Xmls';
 import LoginHeader from '../../components/ui/LoginHeader';
 
-export default function EmailScreen({navigation}) {
+export default function EmailScreen({navigation, route}) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
 
@@ -28,7 +28,10 @@ export default function EmailScreen({navigation}) {
       setError('Please enter a valid email');
     } else {
       setError('');
-      navigation.navigate('password screen');
+      navigation.navigate('PasswordScreen', {
+        ...route.params.userData,
+        email: trimmedEmail,
+      });
     }
   };
 

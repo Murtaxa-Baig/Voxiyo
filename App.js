@@ -7,17 +7,21 @@ import {
   initialWindowMetrics,
   SafeAreaProvider,
 } from 'react-native-safe-area-context';
-import {Platform, SafeAreaView, StatusBar} from 'react-native';
+import {LogBox, Platform, SafeAreaView, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {Web_Client_ID} from './urls';
+import {useMMKVStorage} from 'react-native-mmkv-storage';
+import storage from './src/utils/hooks/MmkvHook';
+import AppStack from './src/stacks/AppStack';
+
+LogBox.ignoreLogs(['Warning: ...']);
+LogBox.ignoreAllLogs();
 
 export default function App() {
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: `${Web_Client_ID}.apps.googleusercontent.com`,
-    });
-  }, []);
+  const [userData, setUserData] = useMMKVStorage('userData', storage);
+
+  console.log('userdata is here', userData);
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
@@ -34,7 +38,7 @@ export default function App() {
               backgroundColor="transparent"
               translucent
             />
-            <AuthStack />
+            {userData ? <AppStack /> : <AuthStack />}
           </SafeAreaView>
         </NavigationContainer>
         <Toast />

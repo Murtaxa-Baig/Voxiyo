@@ -10,8 +10,10 @@ import Xmls from '../../utils/Xmls';
 import LoginHeader from '../../components/ui/LoginHeader';
 import {TextInput} from 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
+import auth from '@react-native-firebase/auth';
+import Toast from 'react-native-toast-message';
 
-export default function PasswordSreen({navigation}) {
+export default function PasswordSreen({navigation, route}) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -43,6 +45,68 @@ export default function PasswordSreen({navigation}) {
     validations.upperCase &&
     validations.specialChar &&
     validations.matched;
+
+  const handleEmail = async () => {
+    if (!isFormValid) {
+      setError('Please fill out the form correctly');
+      return;
+    }
+
+    const email = route?.params?.email;
+
+    if (!email) {
+      setError('Email not found. Please go back and enter your email.');
+      Toast.show({
+        type: 'error',
+        text1: 'Missing Email',
+        text2: 'Email not found. Please go back and enter your email.',
+      });
+      return;
+    }
+
+    setError('');
+
+    try {
+      // Create user
+      await auth().createUserWithEmailAndPassword(email, password);
+      console.log('User account created & signed in!');
+
+      // Send verification email
+      const currentUser = auth().currentUser;
+      if (currentUser) {
+        await currentUser.sendEmailVerification();
+        console.log('Verification email sent!');
+      }
+
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'User registered successfully! Please verify your email.',
+      });
+
+      navigation.navigate('VerifyEmail');
+    } catch (error) {
+      let message = '';
+
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'That email address is already in use!';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'That email address is invalid!';
+      } else {
+        message = error.message;
+      }
+
+      setError(message);
+
+      Toast.show({
+        type: 'error',
+        text1: 'Registration Error',
+        text2: message,
+      });
+
+      console.error(error);
+    }
+  };
 
   return (
     <>
@@ -111,7 +175,7 @@ export default function PasswordSreen({navigation}) {
             {backgroundColor: isFormValid ? '#C0E863' : '#ccc'},
           ]}
           disabled={!isFormValid}
-          onPress={() => navigation.navigate('VerifyEmail')}>
+          onPress={() => handleEmail()}>
           <Text style={{color: '#000'}}>Continue</Text>
         </TouchableOpacity>
       </View>
