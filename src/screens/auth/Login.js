@@ -23,7 +23,7 @@ export default function Login({navigation}) {
     offlineAccess: false,
   });
 
-  const [userInfo, setUserInfo] = useMMKVStorage('userInfo', storage);
+  const [userData, setUserData] = useMMKVStorage('userData', storage);
   const [loading, setLoading] = useState(false);
 
   async function onGoogleButtonPress() {
@@ -49,8 +49,7 @@ export default function Login({navigation}) {
           uid: response.user.uid,
         };
         console.log('userData', userData);
-        setUserInfo(userData);
-        // navigation.navigate('home');
+        setUserData(userData);
       } else {
         console.log('User not found');
       }
