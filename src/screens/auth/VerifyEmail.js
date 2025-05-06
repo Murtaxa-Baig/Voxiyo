@@ -24,9 +24,9 @@ export default function VerifyEmail({navigation}) {
             <Text style={styles.continueText}>Return to Login</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity>
+          {/* <TouchableOpacity>
             <Text style={styles.resendLink}>Resend link</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </View>

@@ -4,6 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
@@ -19,6 +20,7 @@ export default function PasswordSreen({navigation, route}) {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [validations, setValidations] = useState({
     length: false,
     upperCase: false,
@@ -47,8 +49,10 @@ export default function PasswordSreen({navigation, route}) {
     validations.matched;
 
   const handleEmail = async () => {
+    setLoading(true);
     if (!isFormValid) {
       setError('Please fill out the form correctly');
+      setLoading(false);
       return;
     }
 
@@ -61,6 +65,7 @@ export default function PasswordSreen({navigation, route}) {
         text1: 'Missing Email',
         text2: 'Email not found. Please go back and enter your email.',
       });
+      setLoading(false);
       return;
     }
 
@@ -83,7 +88,7 @@ export default function PasswordSreen({navigation, route}) {
         text1: 'Success',
         text2: 'User registered successfully! Please verify your email.',
       });
-
+      setLoading(false);
       navigation.navigate('VerifyEmail');
     } catch (error) {
       let message = '';
@@ -95,7 +100,7 @@ export default function PasswordSreen({navigation, route}) {
       } else {
         message = error.message;
       }
-
+      setLoading(false);
       setError(message);
 
       Toast.show({
@@ -170,13 +175,13 @@ export default function PasswordSreen({navigation, route}) {
 
       <View style={{backgroundColor: '#fff'}}>
         <TouchableOpacity
-          style={[
-            styles.continueButton,
-            {backgroundColor: isFormValid ? '#C0E863' : '#ccc'},
-          ]}
-          disabled={!isFormValid}
+          style={[styles.continueButton, {backgroundColor: '#C0E863'}]}
           onPress={() => handleEmail()}>
-          <Text style={{color: '#000'}}>Continue</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#000" />
+          ) : (
+            <Text style={{color: '#000'}}>Continue</Text>
+          )}
         </TouchableOpacity>
       </View>
     </>

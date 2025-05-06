@@ -21,6 +21,8 @@ export default function FullNameScreen({navigation}) {
       setError('You need to fill out the name');
     } else if (trimmedName.length < 3) {
       setError('You need to fill out the name');
+    } else if (!/^[A-Za-z\s]+$/.test(trimmedName)) {
+      setError('Name should not contain numbers or special characters');
     } else {
       setError('');
       navigation.navigate('CountryScreen', {

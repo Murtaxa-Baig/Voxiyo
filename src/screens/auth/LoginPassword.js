@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import LoginHeader from '../../components/ui/LoginHeader';
@@ -19,18 +20,21 @@ import auth from '@react-native-firebase/auth';
 export default function LoginPassword({navigation, route}) {
   const [showPassword, setShowPassword] = React.useState(false);
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useMMKVStorage('userData', storage);
 
   const routeParams = route?.params?.userData;
   const email = routeParams?.email || '';
 
   const handleLogin = async () => {
+    setLoading(true);
     if (!password) {
       Toast.show({
         type: 'error',
         text1: 'Error',
         text2: 'Please enter your password',
       });
+      setLoading(false);
       return;
     }
 
@@ -49,20 +53,21 @@ export default function LoginPassword({navigation, route}) {
       console.log('setting data in mmkv stroage is here', simpleUserData);
 
       setUserData(simpleUserData);
-      console.log('state data is here=======================', simpleUserData);
 
       Toast.show({
         type: 'success',
         text1: 'Login Successful',
         text2: `Welcome back!`,
       });
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
-        text2: error.message || 'Invalid credentials',
+        text2: 'Invalid credentials',
       });
+      setLoading(false);
     }
   };
 
@@ -97,7 +102,11 @@ export default function LoginPassword({navigation, route}) {
             marginTop: 4,
           }}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('ForgotPassword')}>
+            onPress={() =>
+              navigation.navigate('ForgotPassword', {
+                userData: {email: email},
+              })
+            }>
             <Text style={{color: '#7C7F83', fontSize: 12}}>
               Forgot password?
             </Text>
@@ -108,7 +117,11 @@ export default function LoginPassword({navigation, route}) {
         <TouchableOpacity
           onPress={() => handleLogin()}
           style={styles.submitButton}>
-          <Text style={{color: '#000'}}>Submit</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#000" />
+          ) : (
+            <Text style={{color: '#000'}}>Submit</Text>
+          )}
         </TouchableOpacity>
       </View>
     </>

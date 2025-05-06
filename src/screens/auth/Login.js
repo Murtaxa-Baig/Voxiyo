@@ -15,6 +15,7 @@ import auth from '@react-native-firebase/auth';
 import storage from '../../utils/hooks/MmkvHook';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import Toast from 'react-native-toast-message';
 
 export default function Login({navigation}) {
   GoogleSignin.configure({
@@ -30,6 +31,8 @@ export default function Login({navigation}) {
     try {
       setLoading(true);
       await GoogleSignin.hasPlayServices({showPlayServicesUpdateDialog: true});
+      await GoogleSignin.signOut();
+
       // Get the user's ID token
       const idToken = await GoogleSignin.signIn();
       // console.log('idToken', idToken);
@@ -50,12 +53,22 @@ export default function Login({navigation}) {
         };
         console.log('userData', userData);
         setUserData(userData);
+        Toast.show({
+          type: 'success',
+          text1: 'Log In',
+          text2: 'Log In successfully.',
+        });
       } else {
         console.log('User not found');
       }
       setLoading(false);
     } catch (error) {
       console.log('Google Sign-In error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Sign in error',
+        text2: 'Google Sign-In error.',
+      });
       setLoading(false);
     }
   }

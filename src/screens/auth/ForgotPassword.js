@@ -6,29 +6,46 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import Toast from 'react-native-toast-message';
+// import {sendPasswordResetEmail} from '@react-native-firebase/auth';
+import auth from '@react-native-firebase/auth';
+import firebase from '@react-native-firebase/app';
 
-export default function ForgotPassword({navigation}) {
+export default function ForgotPassword({navigation, route}) {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    const routeParams = route?.params?.userData;
+    const resetPasswordEmail = routeParams?.email || '';
+    setEmail(resetPasswordEmail);
+  }, []);
 
   const validateEmail = email => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  const trimmedEmail = email.trim();
+  const handleContinue = async () => {
+    const trimmedEmail = email.trim();
 
-  const handleContinue = () => {
     if (!trimmedEmail) {
       setError('Please enter your email');
-    } else if (!validateEmail(trimmedEmail)) {
+      return;
+    }
+
+    if (!validateEmail(trimmedEmail)) {
       setError('Please enter a valid email');
-    } else {
-      setError('');
+      return;
+    }
+
+    try {
+      await auth().sendPasswordResetEmail(trimmedEmail);
+
+      console.log('Password reset email sent to:', trimmedEmail);
 
       Toast.show({
         type: 'success',
@@ -40,6 +57,21 @@ export default function ForgotPassword({navigation}) {
       setTimeout(() => {
         navigation.navigate('login');
       }, 2000);
+    } catch (error) {
+      let errorMessage = 'Failed to send reset email. Please try again.';
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'No user found with this email.';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'Invalid email address format.';
+          break;
+        case 'auth/network-request-failed':
+          errorMessage =
+            'Network error. Please check your internet connection.';
+          break;
+      }
+      setError(errorMessage);
     }
   };
 
