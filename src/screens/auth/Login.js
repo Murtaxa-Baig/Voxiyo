@@ -43,7 +43,7 @@ export default function Login({navigation}) {
       );
 
       const response = await auth().signInWithCredential(googleCredential);
-      console.log('response', response.user);
+      // console.log('response', response.user);
       if (response.user) {
         const userData = {
           name: response.user.displayName,
@@ -51,7 +51,7 @@ export default function Login({navigation}) {
           photo: response.user.photoURL,
           uid: response.user.uid,
         };
-        console.log('userData', userData);
+        // console.log('userData', userData);
         setUserData(userData);
         Toast.show({
           type: 'success',

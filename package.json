@@ -18,13 +18,16 @@
     "@react-navigation/drawer": "^7.3.11",
     "@react-navigation/native": "^7.1.6",
     "@react-navigation/stack": "^7.2.10",
+    "axios": "^1.9.0",
     "react": "18.2.0",
     "react-native": "0.74.0",
+    "react-native-actions-sheet": "^0.9.7",
     "react-native-asset": "^2.1.1",
     "react-native-audio-recorder-player": "^3.6.12",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "2.20.0",
     "react-native-mmkv-storage": "0.10.2",
+    "react-native-modal": "^14.0.0-rc.1",
     "react-native-permissions": "^5.4.0",
     "react-native-progress": "^5.0.1",
     "react-native-reanimated": "3.15.4",
@@ -33,7 +36,8 @@
     "react-native-screens": "^4.10.0",
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^15.11.2",
-    "react-native-toast-message": "^2.3.0"
+    "react-native-toast-message": "^2.3.0",
+    "rn-fetch-blob": "^0.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

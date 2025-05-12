@@ -14,14 +14,33 @@ import {Web_Client_ID} from './urls';
 import {useMMKVStorage} from 'react-native-mmkv-storage';
 import storage from './src/utils/hooks/MmkvHook';
 import AppStack from './src/stacks/AppStack';
+import auth from '@react-native-firebase/auth';
 
 LogBox.ignoreLogs(['Warning: ...']);
 LogBox.ignoreAllLogs();
 
+export async function getToken() {
+  try {
+    const user = auth().currentUser;
+    if (user) {
+      const token = await user.getIdToken();
+      // console.log('token', token);
+      if (token) {
+        return token;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log('Error fetching token:', error);
+    return null;
+  }
+}
+
 export default function App() {
   const [userData, setUserData] = useMMKVStorage('userData', storage);
-
-  console.log('userdata is here', userData);
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
