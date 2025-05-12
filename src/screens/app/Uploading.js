@@ -35,27 +35,33 @@ export default function Uploading({navigation, route}) {
   const [translating, setTranslating] = useState('');
   const [error, setError] = useState(null);
   const [isLinkCopied, setIsLinkCopied] = useState(true);
+  const [showCreateOptions, setShowCreateOptions] = useState(false);
 
   const playerListenerRef = useRef(null);
   const addToFolderRef = useRef(null);
   const shareRef = useRef(null);
+  const tagRef = useRef(null);
 
   const btnData = [
     {
-      title: 'Eidt',
+      title: 'Edit',
       icon: Xmls.editIcon,
+      onPress: () => navigation.navigate('EditTranscript'),
     },
     {
       title: 'Tag',
       icon: Xmls.tagIcon,
+      onPress: () => tagRef.current?.show(),
     },
     {
       title: 'Create',
       icon: Xmls.createIcon,
+      onPress: () => setShowCreateOptions(!showCreateOptions),
     },
     {
       title: 'Copy Note',
       icon: Xmls.copyIcon,
+      onPress: () => console.log('Copy Note pressed'),
     },
   ];
 
@@ -197,6 +203,7 @@ export default function Uploading({navigation, route}) {
               {btnData.map((btn, index) => (
                 <TouchableOpacity
                   key={index}
+                  onPress={() => btn?.onPress()}
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -214,6 +221,31 @@ export default function Uploading({navigation, route}) {
                   <Text style={{color: '#000'}}>{btn.title}</Text>
                 </TouchableOpacity>
               ))}
+              {showCreateOptions && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    top: -100,
+                    left: 135,
+                    backgroundColor: '#fff',
+                    borderWidth: 1,
+                    borderColor: '#ccc',
+                    borderRadius: 8,
+                    padding: 10,
+                    zIndex: 1000,
+                  }}>
+                  {['Option 1', 'Option 2', 'Option 3'].map((item, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      onPress={() => {
+                        setShowCreateOptions(false);
+                      }}
+                      style={{paddingVertical: 6}}>
+                      <Text style={{color: '#000', width: 157}}>{item}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
             </View>
             <View
               style={{borderWidth: 1, borderColor: '#E2E5E9', width: '100%'}}
@@ -310,7 +342,6 @@ export default function Uploading({navigation, route}) {
           backgroundColor: '#fff',
           paddingHorizontal: 24,
         }}>
-        {/* <AddToFolderComponent /> */}
         <TouchableOpacity style={style.continueButton}>
           <Text style={style.continueButtonText}>Create Folder</Text>
         </TouchableOpacity>
@@ -438,6 +469,50 @@ export default function Uploading({navigation, route}) {
             </TouchableOpacity>
           </View>
         )}
+      </ActionSheet>
+      <ActionSheet
+        ref={tagRef}
+        gestureEnabled
+        containerStyle={{
+          height: '95%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 12,
+          }}>
+          <TouchableOpacity onPress={() => tagRef.current?.hide()}>
+            <Text style={{color: '#000'}}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              paddingVertical: 5,
+              paddingHorizontal: 14,
+              backgroundColor: '#C0E863',
+              borderRadius: 8,
+            }}>
+            <Text style={{color: '#000'}}>Save</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={style.inputFields}>
+          <SvgXml xml={Xmls.tagIcon} style={style.starIcon} />
+          <TextInput
+            style={style.input}
+            placeholder="Add tags"
+            placeholderTextColor="#7C7F83"
+          />
+        </View>
+        <Text style={{color: '#7C7F83', marginVertical: 12}}>Suggested</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <SvgXml xml={Xmls.starIcon} style={style.icon} />
+          <Text style={{color: '#000'}}>Starred</Text>
+        </View>
       </ActionSheet>
     </>
   );
