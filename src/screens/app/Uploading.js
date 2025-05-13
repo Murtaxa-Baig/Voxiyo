@@ -16,6 +16,10 @@ import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import {getToken} from '../../../App';
 import {BASE_URL} from '../../../urls';
 import ActionSheet from 'react-native-actions-sheet';
+import MainPoints from '../../components/ui/MainPoints';
+import ToDoListComponent from '../../components/ui/ToDoListComponent';
+import Summarize from '../../components/ui/Summarize';
+import Default from '../../components/ui/Default';
 
 const screenWidth = Dimensions.get('window').width - 40;
 const audioRecorderPlayer = new AudioRecorderPlayer();
@@ -36,11 +40,16 @@ export default function Uploading({navigation, route}) {
   const [error, setError] = useState(null);
   const [isLinkCopied, setIsLinkCopied] = useState(true);
   const [showCreateOptions, setShowCreateOptions] = useState(false);
-
+  const [transcript, setTranscript] = useState(false);
+  const [activeTab, setActiveTab] = useState('Default');
+  const [isSection, setIsSection] = useState(true);
+  const [selectedOption, setSelectedOption] = useState('Daily');
   const playerListenerRef = useRef(null);
   const addToFolderRef = useRef(null);
   const shareRef = useRef(null);
   const tagRef = useRef(null);
+  const createFolderRef = useRef(null);
+  const createSectionRef = useRef(null);
 
   const btnData = [
     {
@@ -62,6 +71,51 @@ export default function Uploading({navigation, route}) {
       title: 'Copy Note',
       icon: Xmls.copyIcon,
       onPress: () => console.log('Copy Note pressed'),
+    },
+  ];
+
+  const createBtnData = [
+    {
+      title: 'Main Points',
+      icon: Xmls.mainPoitsIcon,
+      onPress: () => MainPoint(),
+    },
+    {
+      title: 'To-Do List',
+      icon: Xmls.todoListIcon,
+      onPress: () => ToDoList(),
+    },
+    {
+      title: 'Summarize',
+      icon: Xmls.summarizeIcon,
+      onPress: () => handleSummarize(),
+    },
+  ];
+
+  const tabs = [
+    {
+      key: 'Default',
+      label: 'Default',
+      icon: Xmls.defaultIconACtive,
+      content: <Default />,
+    },
+    {
+      key: 'Main Points',
+      label: 'Main Points',
+      icon: Xmls.mainPoitsIcon,
+      content: <MainPoints />,
+    },
+    {
+      key: 'ToDoList',
+      label: 'To-Do List',
+      icon: Xmls.todoListIcon,
+      content: <ToDoListComponent />,
+    },
+    {
+      key: 'Summarize',
+      label: 'Summarize',
+      icon: Xmls.summarizeIcon,
+      content: <Summarize />,
     },
   ];
 
@@ -158,6 +212,30 @@ export default function Uploading({navigation, route}) {
     }
   };
 
+  const MainPoint = () => {
+    console.log('create btn trigred');
+    setActiveTab('Main Points');
+    setShowCreateOptions(false);
+    setTranscript(true);
+    toggleState();
+  };
+
+  const ToDoList = () => {
+    console.log('create btn trigred');
+    setActiveTab('ToDoList');
+    setShowCreateOptions(false);
+    setTranscript(true);
+    toggleState();
+  };
+
+  const handleSummarize = () => {
+    console.log('create btn trigred');
+    setActiveTab('Summarize');
+    setShowCreateOptions(false);
+    setTranscript(true);
+    toggleState();
+  };
+
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" translucent />
@@ -187,145 +265,192 @@ export default function Uploading({navigation, route}) {
         {showError && (
           <>
             <View style={{flex: 1}}>
-              <Text style={{color: '#7C7F83', marginTop: 20}}>
-                Volutpat sed sit orci nisi. Quis donec aliquet id et nunc massa
-                sed vitae. Ut a elementum mollis arcu. Erat habitant ridiculus
-                quam in tristique egestas elementum. Ultrices convallis aliquam
-                mi sollicitudin varius et.
-              </Text>
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginVertical: 10,
-              }}>
-              {btnData.map((btn, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => btn?.onPress()}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    paddingHorizontal: 8,
-                    paddingVertical: 5,
-                    width: 'auto',
-                    marginTop: 20,
-                    justifyContent: 'center',
-                    borderWidth: 1,
-                    borderColor: '#E2E5E9',
-                    borderRadius: 8,
-                    marginRight: 5,
-                  }}>
-                  <SvgXml style={{marginRight: 4}} xml={btn.icon} />
-                  <Text style={{color: '#000'}}>{btn.title}</Text>
-                </TouchableOpacity>
-              ))}
-              {showCreateOptions && (
-                <View
-                  style={{
-                    position: 'absolute',
-                    top: -100,
-                    left: 135,
-                    backgroundColor: '#fff',
-                    borderWidth: 1,
-                    borderColor: '#ccc',
-                    borderRadius: 8,
-                    padding: 10,
-                    zIndex: 1000,
-                  }}>
-                  {['Option 1', 'Option 2', 'Option 3'].map((item, idx) => (
-                    <TouchableOpacity
-                      key={idx}
-                      onPress={() => {
-                        setShowCreateOptions(false);
-                      }}
-                      style={{paddingVertical: 6}}>
-                      <Text style={{color: '#000', width: 157}}>{item}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
+              {transcript && (
+                <>
+                  <View style={style.tabContainer}>
+                    {tabs.map(tab => (
+                      <TouchableOpacity
+                        key={tab.key}
+                        style={
+                          activeTab === tab.key
+                            ? style.activetabItem
+                            : style.tabItem
+                        }
+                        onPress={() => setActiveTab(tab.key)}>
+                        <SvgXml xml={tab.icon} />
+                        {activeTab === tab.key && (
+                          <Text style={style.tabText}>{tab.label}</Text>
+                        )}
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  {tabs.find(tab => tab.key === activeTab)?.content}
+                </>
+              )}
+              {!transcript && (
+                <Text style={{color: '#7C7F83', marginTop: 20}}>
+                  Volutpat sed sit orci nisi. Quis donec aliquet id et nunc
+                  massa sed vitae. Ut a elementum mollis arcu. Erat habitant
+                  ridiculus quam in tristique egestas elementum. Ultrices
+                  convallis aliquam mi sollicitudin varius et.
+                </Text>
               )}
             </View>
-            <View
-              style={{borderWidth: 1, borderColor: '#E2E5E9', width: '100%'}}
-            />
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: 10,
-              }}>
-              <Text style={{color: '#000', fontWeight: '500'}}>
-                New Recording
-              </Text>
-              <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
-                <SvgXml style={{marginRight: 4}} xml={Xmls.starIcon} />
-                <TouchableOpacity onPress={() => toggleState()}>
-                  <SvgXml
-                    style={{marginRight: 4}}
-                    xml={isCollapsOn ? Xmls.expandIcon : Xmls.collapsIcon}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <Text style={{color: '#7C7F83'}}>30 July 2024 13.09</Text>
-            {isCollapsOn ? null : (
+            {activeTab !== 'ToDoList' && (
               <>
-                <Progress.Bar
-                  progress={isNaN(progress) ? 0 : progress}
-                  color="#0D0F10"
-                  width={screenWidth}
-                  borderWidth={0}
-                  unfilledColor="#F5F6F8"
-                  style={{marginTop: 10}}
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    marginVertical: 10,
+                  }}>
+                  {btnData.map((btn, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => btn?.onPress()}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        paddingHorizontal: 8,
+                        paddingVertical: 5,
+                        width: 'auto',
+                        marginTop: 20,
+                        justifyContent: 'center',
+                        borderWidth: 1,
+                        borderColor: '#E2E5E9',
+                        borderRadius: 8,
+                        marginRight: 5,
+                      }}>
+                      <SvgXml style={{marginRight: 4}} xml={btn.icon} />
+                      <Text style={{color: '#000'}}>{btn.title}</Text>
+                    </TouchableOpacity>
+                  ))}
+                  {showCreateOptions && (
+                    <View
+                      style={{
+                        position: 'absolute',
+                        top: -100,
+                        left: 135,
+                        backgroundColor: '#fff',
+                        borderWidth: 1,
+                        borderColor: '#ccc',
+                        borderRadius: 8,
+                        padding: 10,
+                        zIndex: 1000,
+                      }}>
+                      {createBtnData.map((item, idx) => (
+                        <TouchableOpacity
+                          key={idx}
+                          onPress={() => item.onPress()}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            paddingVertical: 6,
+                          }}>
+                          <SvgXml
+                            style={{marginHorizontal: 8}}
+                            xml={item.icon}
+                          />
+                          <Text style={{color: '#000'}}>{item.title}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </View>
+
+                <View
+                  style={{
+                    borderWidth: 1,
+                    borderColor: '#E2E5E9',
+                    width: '100%',
+                  }}
                 />
+
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    marginTop: 10,
                   }}>
-                  <Text style={{color: '#7C7F83'}}>{playbackTime}</Text>
-                  <Text style={{color: '#7C7F83'}}>{duration}</Text>
+                  <Text style={{color: '#000', fontWeight: '500'}}>
+                    New Recording
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}>
+                    <SvgXml style={{marginRight: 4}} xml={Xmls.starIcon} />
+                    <TouchableOpacity onPress={() => toggleState()}>
+                      <SvgXml
+                        style={{marginRight: 4}}
+                        xml={isCollapsOn ? Xmls.expandIcon : Xmls.collapsIcon}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <SvgXml xml={Xmls.previousIcon} />
-                  <TouchableOpacity
-                    onPress={isPlaying ? onPausePlay : onStartPlay}
-                    style={{marginHorizontal: 20}}>
-                    <SvgXml
-                      xml={
-                        isPlaying
-                          ? Xmls.pauseRcordingIcon
-                          : Xmls.playRecordingIcon
-                      }
+
+                <Text style={{color: '#7C7F83'}}>30 July 2024 13.09</Text>
+
+                {!isCollapsOn && (
+                  <>
+                    <Progress.Bar
+                      progress={isNaN(progress) ? 0 : progress}
+                      color="#0D0F10"
+                      width={screenWidth}
+                      borderWidth={0}
+                      unfilledColor="#F5F6F8"
+                      style={{marginTop: 10}}
                     />
-                  </TouchableOpacity>
-                  <SvgXml xml={Xmls.nextIcon} />
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: 5,
-                  }}>
-                  <TouchableOpacity
-                    onPress={() => addToFolderRef.current?.show()}>
-                    <SvgXml xml={Xmls.addToFolderIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => shareRef.current?.show()}>
-                    <SvgXml xml={Xmls.ShareIcon} />
-                  </TouchableOpacity>
-                </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                      }}>
+                      <Text style={{color: '#7C7F83'}}>{playbackTime}</Text>
+                      <Text style={{color: '#7C7F83'}}>{duration}</Text>
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                      <SvgXml xml={Xmls.previousIcon} />
+                      <TouchableOpacity
+                        onPress={isPlaying ? onPausePlay : onStartPlay}
+                        style={{marginHorizontal: 20}}>
+                        <SvgXml
+                          xml={
+                            isPlaying
+                              ? Xmls.pauseRcordingIcon
+                              : Xmls.playRecordingIcon
+                          }
+                        />
+                      </TouchableOpacity>
+                      <SvgXml xml={Xmls.nextIcon} />
+                    </View>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginBottom: 5,
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => addToFolderRef.current?.show()}>
+                        <SvgXml xml={Xmls.addToFolderIcon} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => shareRef.current?.show()}>
+                        <SvgXml xml={Xmls.ShareIcon} />
+                      </TouchableOpacity>
+                    </View>
+                  </>
+                )}
               </>
             )}
           </>
@@ -342,48 +467,120 @@ export default function Uploading({navigation, route}) {
           backgroundColor: '#fff',
           paddingHorizontal: 24,
         }}>
-        <TouchableOpacity style={style.continueButton}>
-          <Text style={style.continueButtonText}>Create Folder</Text>
-        </TouchableOpacity>
-        <View style={style.inputFields}>
-          <SvgXml xml={Xmls.searchIcon} style={style.starIcon} />
-          <TextInput
-            style={style.input}
-            placeholder="Find Folder"
-            placeholderTextColor="#7C7F83"
-          />
-        </View>
-        <Text style={{color: '#7C7F83', marginVertical: 12}}>Suggested</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <SvgXml xml={Xmls.starIcon} style={style.icon} />
-          <Text style={{color: '#000'}}>Starred</Text>
-        </View>
-        <Text style={{color: '#7C7F83', marginVertical: 12}}>Folder</Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingVertical: 6,
-          }}>
-          <SvgXml xml={Xmls.folderIcon} style={style.icon} />
-          <Text style={{color: '#000'}}>Folder</Text>
-        </View>
-        {[1, 2].map((item, index) => (
-          <View
-            key={index}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              paddingVertical: 6,
-            }}>
+        {isSection ? (
+          <>
+            <TouchableOpacity
+              onPress={() => {
+                addToFolderRef.current.hide();
+                createFolderRef.current?.show();
+              }}
+              style={style.continueButton}>
+              <Text style={style.continueButtonText}>Create Folder</Text>
+            </TouchableOpacity>
+            <View style={style.inputFields}>
+              <SvgXml xml={Xmls.searchIcon} style={style.starIcon} />
+              <TextInput
+                style={style.input}
+                placeholder="Find Folder"
+                placeholderTextColor="#7C7F83"
+              />
+            </View>
+            <Text style={{color: '#7C7F83', marginVertical: 12}}>
+              Suggested
+            </Text>
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <SvgXml xml={Xmls.starIcon} style={style.icon} />
+              <Text style={{color: '#000'}}>Starred</Text>
+            </View>
+            <Text style={{color: '#7C7F83', marginVertical: 12}}>Folder</Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingVertical: 6,
+              }}>
               <SvgXml xml={Xmls.folderIcon} style={style.icon} />
               <Text style={{color: '#000'}}>Folder</Text>
             </View>
-            <SvgXml xml={Xmls.rightArrow} style={style.icon} />
-          </View>
-        ))}
+            {[1, 2].map((item, index) => (
+              <TouchableOpacity
+                onPress={() => setIsSection(false)}
+                key={index}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  paddingVertical: 6,
+                }}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <SvgXml xml={Xmls.folderIcon} style={style.icon} />
+                  <Text style={{color: '#000'}}>Folder</Text>
+                </View>
+                <SvgXml xml={Xmls.rightArrow} style={style.icon} />
+              </TouchableOpacity>
+            ))}
+          </>
+        ) : (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: '#fff',
+                width: '100%',
+                marginVertical: 8,
+              }}>
+              <TouchableOpacity
+                style={style.backArrow}
+                onPress={() => setIsSection(true)}>
+                <SvgXml xml={Xmls.leftArrow} />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  color: '#000',
+                  fontSize: 12,
+                  textAlign: 'center',
+                  width: '60%',
+                }}>
+                Choose Section
+              </Text>
+            </View>
+            {['Section 1', 'Section 2', 'Section 3', 'Section 4'].map(
+              (item, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    setSelectedOption(item);
+                    addToFolderRef.current?.hide();
+                  }}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: 6,
+                    borderRadius: 8,
+                    backgroundColor:
+                      selectedOption === item ? '#E5E5E5' : 'transparent',
+                    marginVertical: 4,
+                  }}>
+                  <Text style={{color: '#000'}}>{item}</Text>
+                  {selectedOption === item && (
+                    <SvgXml style={{marginHorizontal: 8}} xml={Xmls.selected} />
+                  )}
+                </TouchableOpacity>
+              ),
+            )}
+            <TouchableOpacity
+              onPress={() => {
+                addToFolderRef.current.hide();
+                createSectionRef.current?.show();
+              }}
+              style={{flexDirection: 'row', alignItems: 'center'}}>
+              <SvgXml style={{marginHorizontal: 8}} xml={Xmls.createSection} />
+              <Text style={{color: '#000'}}>Create Section</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </ActionSheet>
       <ActionSheet
         ref={shareRef}
@@ -514,6 +711,88 @@ export default function Uploading({navigation, route}) {
           <Text style={{color: '#000'}}>Starred</Text>
         </View>
       </ActionSheet>
+      <ActionSheet
+        ref={createFolderRef}
+        gestureEnabled
+        containerStyle={{
+          height: '35%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
+          <TouchableOpacity
+            style={{width: 30, height: 30}}
+            onPress={() => createFolderRef.current?.hide()}>
+            <SvgXml style={{marginHorizontal: 4}} xml={Xmls.crossIcon} />
+          </TouchableOpacity>
+        </View>
+        <View style={style.separator} />
+        <Text style={{color: '#000', marginVertical: 12}}>Folder Name</Text>
+        <TextInput
+          style={style.createFolderInput}
+          placeholder="Enter text"
+          placeholderTextColor="#7C7F83"
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
+          <Text style={{color: '#7C7F83', marginTop: 4, fontSize: 14}}>
+            0/50
+          </Text>
+        </View>
+        <TouchableOpacity style={style.saveButton}>
+          <Text style={{color: '#000'}}>Create Folder</Text>
+        </TouchableOpacity>
+      </ActionSheet>
+      <ActionSheet
+        ref={createSectionRef}
+        gestureEnabled
+        containerStyle={{
+          height: '35%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
+          <TouchableOpacity
+            style={{width: 30, height: 30}}
+            onPress={() => createSectionRef.current?.hide()}>
+            <SvgXml style={{marginHorizontal: 4}} xml={Xmls.crossIcon} />
+          </TouchableOpacity>
+        </View>
+        <View style={style.separator} />
+        <Text style={{color: '#000', marginVertical: 12}}>Section Name</Text>
+        <TextInput
+          style={style.createFolderInput}
+          placeholder="Enter text"
+          placeholderTextColor="#7C7F83"
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
+          <Text style={{color: '#7C7F83', marginTop: 4, fontSize: 14}}>
+            0/50
+          </Text>
+        </View>
+        <TouchableOpacity style={style.saveButton}>
+          <Text style={{color: '#000'}}>Create Section</Text>
+        </TouchableOpacity>
+      </ActionSheet>
     </>
   );
 }
@@ -563,5 +842,57 @@ const style = StyleSheet.create({
     height: 43,
     fontSize: 16,
     color: '#000',
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#F5F6F8',
+    justifyContent: 'space-between',
+    padding: 4,
+    height: 38,
+    borderRadius: 34,
+    marginVertical: 12,
+  },
+  activetabItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 34,
+    paddingHorizontal: 6,
+  },
+  tabItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 6,
+  },
+  tabText: {
+    fontSize: 12,
+    marginHorizontal: 8,
+    color: '#000',
+  },
+  backArrow: {
+    width: '20%',
+  },
+  separator: {
+    borderWidth: 1,
+    height: 1,
+    borderColor: '#E2E5E9',
+  },
+  createFolderInput: {
+    color: '#000',
+    height: 38,
+    width: '100%',
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#E2E5E9',
+    borderRadius: 8,
+  },
+  saveButton: {
+    backgroundColor: '#fff',
+    paddingVertical: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+    backgroundColor: '#C0E863',
+    alignItems: 'center',
+    marginTop: 12,
   },
 });
