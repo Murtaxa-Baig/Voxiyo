@@ -34,7 +34,7 @@ export default function BottomTab() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          height: Platform.OS === 'ios' ? 115 : 74,
+          height: Platform.OS === 'ios' ? 115 : 50,
           backgroundColor: '#FFF',
           borderTopWidth: 0,
         },

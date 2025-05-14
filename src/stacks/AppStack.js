@@ -6,6 +6,7 @@ import Drawer from './Drawer';
 import EditTranscript from '../screens/app/EditTranscript';
 import ProfileSetting from '../screens/app/ProfileSetting';
 import BackupScreen from '../screens/app/BackupScreen';
+import InsideFolder from '../screens/app/InsideFolder';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,7 @@ export default function AppStack() {
       <Stack.Screen name="EditTranscript" component={EditTranscript} />
       <Stack.Screen name="ProfileSetting" component={ProfileSetting} />
       <Stack.Screen name="BackupScreen" component={BackupScreen} />
+      <Stack.Screen name="InsideFolder" component={InsideFolder} />
     </Stack.Navigator>
   );
 }

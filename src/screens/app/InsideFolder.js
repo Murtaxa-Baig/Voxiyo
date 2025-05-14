@@ -3,9 +3,9 @@ import {
   Text,
   StatusBar,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
-  Image,
+  FlatList,
+  TextInput,
   Modal,
 } from 'react-native';
 import React, {useRef, useState} from 'react';
@@ -13,26 +13,26 @@ import {SvgXml} from 'react-native-svg';
 import Xmls from '../../utils/Xmls';
 import ActionSheet from 'react-native-actions-sheet';
 
-export default function Folder({navigation}) {
-  const [createFolderPressed, setCreateFolderPressed] = useState(false);
+export default function InsideFolder({navigation, route}) {
   const [isGridView, setIsGridView] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const createFolderRef = useRef(null);
+
   const moreIconRef = useRef(null);
-  const createSectionRef = useRef(null);
   const moveToFolderRef = useRef(null);
   const shareRef = useRef(null);
+  const createSectionRef = useRef(null);
 
+  const folderName = route?.params?.userData?.folderName;
+  const recordings = [1, 2, 3, 4];
+  const gridSetionData = [
+    {title: 'Meeting', text: '2 sections '},
+    {title: 'Review Freelance', text: '24 Voicenote'},
+    {title: 'Daily Task', text: '5 sections'},
+    {title: 'Daily Task', text: '5 sections'},
+    {title: 'Daily Task', text: '5 sections'},
+  ];
   const data = [
-    {
-      icon: Xmls.plusIcon,
-      text: 'Add Section',
-      onPress: () => {
-        moreIconRef.current?.hide();
-        createSectionRef.current.show();
-      },
-    },
     {
       icon: Xmls.folderIcon,
       text: 'Move to',
@@ -67,176 +67,146 @@ export default function Folder({navigation}) {
     },
   ];
 
-  const gridSetionData = [
-    {title: 'Meeting', text: '2 sections · 19 Voicenote'},
-    {title: 'Review Freelance Project', text: '24 Voicenote'},
-    {title: 'Daily Task', text: '5 sections'},
-  ];
-
   const toggleState = () => {
     setIsGridView(prev => !prev);
   };
+
+  const renderItem = ({item}) => (
+    <View style={style.recordingItem}>
+      <View style={style.recordingItemHeader}>
+        <Text style={{color: '#0D0F10'}}>New Recording</Text>
+        <Text style={{color: '#7C7F83', fontSize: 12}}>Yesterday</Text>
+      </View>
+      <Text style={style.recordingText}>
+        Volutpat sed sit orci nisi. Quis donec aliquet id...
+      </Text>
+      <Text style={style.tagsText}>#Tags #Tags</Text>
+      <View style={style.recordingItemFooter}>
+        <View style={style.folderBox}>
+          <SvgXml xml={Xmls.folderIcon} />
+          <Text style={{color: '#0D0F10', marginLeft: 4}}>Folder</Text>
+        </View>
+        <SvgXml xml={Xmls.voicePlayGrayIcon} />
+      </View>
+    </View>
+  );
 
   return (
     <>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" translucent />
 
-      <View style={style.content}>
+      <View style={style.container}>
         <TouchableOpacity
           onPress={() => navigation.navigate('Recording')}
           style={style.microPhoneConatiner}>
           <SvgXml xml={Xmls.hoverMicrophone} />
         </TouchableOpacity>
+
         <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
             paddingHorizontal: 24,
+            paddingTop: 16,
           }}>
-          <View style={style.searchBox}>
-            <TouchableOpacity
-            // onPress={() => navigation.openDrawer()}
-            >
-              <SvgXml style={{marginHorizontal: 4}} xml={Xmls.menuIcon} />
-            </TouchableOpacity>
-            <TextInput
-              style={{color: '#000', width: '78%'}}
-              placeholder="Search"
-              placeholderTextColor="#999"
-            />
-            <SvgXml style={{marginHorizontal: 4}} xml={Xmls.microphoneIcon} />
-          </View>
-          <SvgXml xml={Xmls.aiIcon} style={{marginHorizontal: 4}} />
           <TouchableOpacity
-            onPress={() => {
-              createFolderPressed
-                ? moreIconRef.current?.show()
-                : createFolderRef.current?.show();
-            }}>
-            <SvgXml xml={Xmls.plusIcon} style={{marginHorizontal: 4}} />
+            style={{padding: 4}}
+            onPress={() => navigation.goBack()}>
+            <SvgXml xml={Xmls.leftArrow} />
+          </TouchableOpacity>
+          <Text style={{color: '#000'}}>{folderName}</Text>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <SvgXml xml={Xmls.searchIcon} style={{marginHorizontal: 8}} />
+            <TouchableOpacity
+              style={{padding: 4}}
+              onPress={() => moreIconRef.current.show()}>
+              <SvgXml xml={Xmls.moreIcon} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={style.sectionHeader}>
+          <TouchableOpacity
+            // onPress={() => recentRef.current?.show()}
+            style={{flexDirection: 'row', alignItems: 'center'}}>
+            <SvgXml xml={Xmls.recentIcon} />
+            <Text style={{color: '#000', marginLeft: 4}}>Recents</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleState}>
+            <SvgXml xml={isGridView ? Xmls.listIcon : Xmls.gridIcon} />
           </TouchableOpacity>
         </View>
 
-        {createFolderPressed ? (
-          <View>
-            <View style={style.sectionHeader}>
-              <TouchableOpacity
-                // onPress={() => recentRef.current?.show()}
-                style={{flexDirection: 'row', alignItems: 'center'}}>
-                <SvgXml xml={Xmls.recentIcon} />
-                <Text style={{color: '#000', marginLeft: 4}}>Recents</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => toggleState()}>
-                <SvgXml xml={isGridView ? Xmls.listIcon : Xmls.gridIcon} />
-              </TouchableOpacity>
-            </View>
-            <>
-              {isGridView ? (
-                <View
-                  style={{
-                    paddingHorizontal: 24,
-                    flexDirection: 'row',
-                    flexWrap: 'wrap',
-                    justifyContent: 'space-between',
-                  }}>
-                  {gridSetionData.map((item, index) => {
-                    return (
-                      <TouchableOpacity
-                        onPress={() => {
-                          navigation.navigate('InsideFolder', {
-                            userData: {folderName: item},
-                          });
-                        }}
-                        key={index}
-                        style={style.girdSection}>
-                        <View
-                          style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                          }}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              height: 32,
-                              width: 32,
-                              borderRadius: 8,
-                              backgroundColor: '#F5F6F8',
-                            }}>
-                            <SvgXml xml={Xmls.folderIcon} />
-                          </View>
-                          <TouchableOpacity
-                            style={{padding: 8}}
-                            onPress={() => moreIconRef.current.show()}>
-                            <SvgXml xml={Xmls.moreIcon} />
-                          </TouchableOpacity>
-                        </View>
-                        <Text style={{color: '#000'}}>{item.title}</Text>
-                        <Text style={{color: '#7C7F83', fontSize: 12}}>
-                          {item.text}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
+        {isGridView ? (
+          <View
+            style={{
+              paddingHorizontal: 24,
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
+            }}>
+            {gridSetionData.map((item, index) => {
+              return (
+                <View key={index} style={style.girdSection}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: 32,
+                        width: 32,
+                        borderRadius: 8,
+                        backgroundColor: '#F5F6F8',
+                      }}>
+                      <SvgXml xml={Xmls.microPhoneSmall} />
+                    </View>
+                    <TouchableOpacity
+                      style={{padding: 8}}
+                      // onPress={() => moreIconRef.current.show()}
+                    >
+                      <SvgXml xml={Xmls.moreIcon} />
+                    </TouchableOpacity>
+                  </View>
+                  <Text style={{color: '#000'}}>{item.title}</Text>
+                  <Text style={{color: '#7C7F83', fontSize: 12}}>
+                    {item.text}
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      alignSelf: 'flex-start',
+                      padding: 4,
+                      borderWidth: 1,
+                      borderColor: '#E2E5E9',
+                      borderRadius: 8,
+                      marginTop: 4,
+                    }}>
+                    <SvgXml xml={Xmls.folderIcon} />
+                    <Text style={{color: '#0D0F10', marginLeft: 4}}>
+                      Folder
+                    </Text>
+                  </View>
                 </View>
-              ) : (
-                <View>
-                  {['Meeting', 'Review Freelance', 'Daily Task'].map(
-                    (item, index) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigation.navigate('InsideFolder', {
-                              userData: {folderName: item},
-                            });
-                          }}
-                          key={index}
-                          style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            paddingHorizontal: 24,
-                          }}>
-                          <Text style={{color: '#0D0F10', paddingVertical: 8}}>
-                            {item}
-                          </Text>
-                          <TouchableOpacity
-                            style={{paddingHorizontal: 8}}
-                            onPress={() => moreIconRef.current.show()}>
-                            <SvgXml xml={Xmls.moreIconVertical} />
-                          </TouchableOpacity>
-                        </TouchableOpacity>
-                      );
-                    },
-                  )}
-                </View>
-              )}
-            </>
+              );
+            })}
           </View>
         ) : (
-          <View style={style.emptyListContainer}>
-            <Image
-              style={style.img}
-              source={require('../../assets/images/folder.png')}
-            />
-            <Text style={{color: '#0D0F10', fontWeight: '500', marginTop: 8}}>
-              No folder yet
-            </Text>
-            <Text style={{color: '#7C7F83', fontSize: 12}}>
-              Create a folder to store your voice note
-            </Text>
-            <TouchableOpacity
-              onPress={() => createFolderRef.current?.show()}
-              style={style.createBtn}>
-              <Text style={{color: '#0D0F10', fontSize: 14}}>
-                Create Folder
-              </Text>
-            </TouchableOpacity>
-          </View>
+          <FlatList
+            data={recordings}
+            renderItem={renderItem}
+            keyExtractor={(item, index) => index.toString()}
+            contentContainerStyle={{paddingBottom: 4}}
+          />
         )}
+
         {isModalVisible && (
           <Modal isVisible={isModalVisible} transparent animationType="fade">
             <View style={style.modalBackground}>
@@ -264,62 +234,20 @@ export default function Folder({navigation}) {
           </Modal>
         )}
       </View>
-      <ActionSheet
-        ref={createFolderRef}
-        gestureEnabled
-        containerStyle={{
-          height: '35%',
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          backgroundColor: '#fff',
-          paddingHorizontal: 24,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}>
-          <TouchableOpacity
-            style={{width: 30, height: 30}}
-            onPress={() => createFolderRef.current?.hide()}>
-            <SvgXml style={{marginHorizontal: 4}} xml={Xmls.crossIcon} />
-          </TouchableOpacity>
-        </View>
-        <View style={style.separator} />
-        <Text style={{color: '#000', marginVertical: 12}}>Folder Name</Text>
-        <TextInput
-          style={style.createFolderInput}
-          placeholder="Enter text"
-          placeholderTextColor="#7C7F83"
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}>
-          <Text style={{color: '#7C7F83', marginTop: 4, fontSize: 14}}>
-            0/50
-          </Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            createFolderRef.current.hide();
-            setCreateFolderPressed(true);
-          }}
-          style={style.saveButton}>
-          <Text style={{color: '#000'}}>Create Folder</Text>
-        </TouchableOpacity>
-      </ActionSheet>
+
       <ActionSheet
         ref={moreIconRef}
         gestureEnabled
         containerStyle={{
-          height: '45%',
+          height: '40%',
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           backgroundColor: '#fff',
         }}>
         <TouchableOpacity
+          // onPress={() => {
+          //   moreIconRef.current?.hide();
+          // }}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -338,7 +266,7 @@ export default function Folder({navigation}) {
             }}>
             <SvgXml xml={Xmls.folderIcon} />
           </View>
-          <Text style={{color: '#000', marginLeft: 10}}>Meeting</Text>
+          <Text style={{color: '#000', marginLeft: 10}}>{folderName}</Text>
         </TouchableOpacity>
         <View style={style.separator} />
         {data.map((item, index) => (
@@ -356,47 +284,7 @@ export default function Folder({navigation}) {
           </TouchableOpacity>
         ))}
       </ActionSheet>
-      <ActionSheet
-        ref={createSectionRef}
-        gestureEnabled
-        containerStyle={{
-          height: '35%',
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          backgroundColor: '#fff',
-          paddingHorizontal: 24,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}>
-          <TouchableOpacity
-            style={{width: 30, height: 30}}
-            onPress={() => createSectionRef.current?.hide()}>
-            <SvgXml style={{marginHorizontal: 4}} xml={Xmls.crossIcon} />
-          </TouchableOpacity>
-        </View>
-        <View style={style.separator} />
-        <Text style={{color: '#000', marginVertical: 12}}>Section Name</Text>
-        <TextInput
-          style={style.createFolderInput}
-          placeholder="Enter text"
-          placeholderTextColor="#7C7F83"
-        />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-end',
-          }}>
-          <Text style={{color: '#7C7F83', marginTop: 4, fontSize: 14}}>
-            0/50
-          </Text>
-        </View>
-        <TouchableOpacity style={style.saveButton}>
-          <Text style={{color: '#000'}}>Create Section</Text>
-        </TouchableOpacity>
-      </ActionSheet>
+
       <ActionSheet
         ref={moveToFolderRef}
         gestureEnabled
@@ -544,6 +432,48 @@ export default function Folder({navigation}) {
           </View>
         )}
       </ActionSheet>
+
+      <ActionSheet
+        ref={createSectionRef}
+        gestureEnabled
+        containerStyle={{
+          height: '35%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
+          <TouchableOpacity
+            style={{width: 30, height: 30}}
+            onPress={() => createSectionRef.current?.hide()}>
+            <SvgXml style={{marginHorizontal: 4}} xml={Xmls.crossIcon} />
+          </TouchableOpacity>
+        </View>
+        <View style={style.separator} />
+        <Text style={{color: '#000', marginVertical: 12}}>Section Name</Text>
+        <TextInput
+          style={style.createFolderInput}
+          placeholder="Enter text"
+          placeholderTextColor="#7C7F83"
+        />
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+          }}>
+          <Text style={{color: '#7C7F83', marginTop: 4, fontSize: 14}}>
+            0/50
+          </Text>
+        </View>
+        <TouchableOpacity style={style.saveButton}>
+          <Text style={{color: '#000'}}>Create Section</Text>
+        </TouchableOpacity>
+      </ActionSheet>
     </>
   );
 }
@@ -553,39 +483,83 @@ const style = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  content: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 12,
-  },
 
-  searchBox: {
-    width: '80%',
-    height: 38,
-    backgroundColor: '#F5F6F8',
-    borderRadius: 8,
+  microPhoneConatiner: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-
-  emptyListContainer: {
-    flex: 1,
     justifyContent: 'center',
+    position: 'absolute',
+    bottom: 10,
+    right: 24,
+    height: 56,
+    width: 56,
+    backgroundColor: '#C0E863',
+    borderRadius: 56,
+    zIndex: 1,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    width: '100%',
+    justifyContent: 'space-between',
+    marginVertical: 12,
     paddingHorizontal: 24,
   },
-  img: {
-    width: 75,
-    height: 50,
+
+  recordingItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderBottomWidth: 2,
+    borderColor: '#E2E5E9',
+    backgroundColor: 'white',
+    paddingHorizontal: 24,
   },
-  createBtn: {
-    marginTop: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 8,
+  recordingItemHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
+  recordingText: {
+    color: '#7C7F83',
+    marginVertical: 4,
+    fontSize: 14,
+  },
+  tagsText: {
+    color: '#7C7F83',
+    marginVertical: 4,
+    fontSize: 12,
+  },
+  recordingItemFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  folderBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 4,
+    borderWidth: 1,
+    borderColor: '#E2E5E9',
+    borderRadius: 8,
+  },
+
+  girdSection: {
+    borderWidth: 1,
+    borderColor: '#E2E5E9',
+    borderRadius: 12,
+    paddingLeft: 12,
+    paddingTop: 8,
+    paddingRight: 4,
+    paddingBottom: 12,
+    width: '48%',
+    marginVertical: 6,
+  },
+  continueButtonText: {
+    color: '#000',
+  },
+  icon: {
+    marginRight: 8,
+  },
   separator: {
     borderWidth: 1,
     height: 1,
@@ -609,45 +583,6 @@ const style = StyleSheet.create({
     backgroundColor: '#C0E863',
     alignItems: 'center',
     marginTop: 12,
-  },
-
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginVertical: 12,
-    paddingHorizontal: 24,
-  },
-
-  microPhoneConatiner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    bottom: 10,
-    right: 24,
-    height: 56,
-    width: 56,
-    backgroundColor: '#C0E863',
-    borderRadius: 56,
-    zIndex: 1,
-  },
-  girdSection: {
-    borderWidth: 1,
-    borderColor: '#E2E5E9',
-    borderRadius: 12,
-    paddingLeft: 12,
-    paddingTop: 8,
-    paddingRight: 4,
-    paddingBottom: 12,
-    width: '48%',
-    marginVertical: 6,
-  },
-  continueButtonText: {
-    color: '#000',
-  },
-  icon: {
-    marginRight: 8,
   },
 
   modalBackground: {
