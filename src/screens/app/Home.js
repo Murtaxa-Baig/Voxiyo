@@ -15,10 +15,12 @@ import Xmls from '../../utils/Xmls';
 import ActionSheet from 'react-native-actions-sheet';
 
 export default function Home({navigation}) {
-  const [list, setList] = useState([1, 2, 3]);
+  const [list, setList] = useState([1, 2]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSection, setIsSection] = useState(true);
+  const [isGridView, setIsGridView] = useState(false);
   const [isSubmitFeedback, setIsSubmitFeedback] = useState(false);
+  const [isLinkCopied, setIsLinkCopied] = useState(true);
 
   const recentRef = useRef(null);
   const moreIconRef = useRef(null);
@@ -26,14 +28,50 @@ export default function Home({navigation}) {
   const createFolderRef = useRef(null);
   const createSectionRef = useRef(null);
   const feedbackRef = useRef(null);
+  const tagRef = useRef(null);
+  const shareRef = useRef(null);
 
   const recentOptions = ['Daily', 'Weekly', 'Monthly'];
   const data = [
-    {icon: Xmls.creatingIcon, text: 'Regenerate Transcript'},
-    {icon: Xmls.addToFolderIcon, text: 'Add to folder'},
-    {icon: Xmls.tagIcon, text: 'Add Tags'},
-    {icon: Xmls.ShareIcon, text: 'Share'},
-    {icon: Xmls.deleteIcon, text: 'Delete'},
+    {
+      icon: Xmls.creatingIcon,
+      text: 'Regenerate Transcript',
+      onPress: () => {
+        moreIconRef.current.hide();
+      },
+    },
+    {
+      icon: Xmls.addToFolderIcon,
+      text: 'Add to folder',
+      onPress: () => {
+        moreIconRef.current.hide();
+        addToFolderRef.current.show();
+      },
+    },
+    {
+      icon: Xmls.tagIcon,
+      text: 'Add Tags',
+      onPress: () => {
+        moreIconRef.current.hide();
+        tagRef.current.show();
+      },
+    },
+    {
+      icon: Xmls.ShareIcon,
+      text: 'Share',
+      onPress: () => {
+        moreIconRef.current.hide();
+        shareRef.current.show();
+      },
+    },
+    {
+      icon: Xmls.deleteIcon,
+      text: 'Delete',
+      onPress: () => {
+        moreIconRef.current.hide();
+        setIsModalVisible(true);
+      },
+    },
   ];
 
   useEffect(() => {
@@ -42,6 +80,10 @@ export default function Home({navigation}) {
       feedbackRef.current.show();
     }
   }, []);
+
+  const toggleState = () => {
+    setIsGridView(prev => !prev);
+  };
 
   const renderLeftActions = itemId => (
     <View style={{flexDirection: 'row', height: '100%'}}>
@@ -121,39 +163,102 @@ export default function Home({navigation}) {
                   <SvgXml xml={Xmls.recentIcon} />
                   <Text style={{color: '#000', marginLeft: 4}}>Recents</Text>
                 </TouchableOpacity>
-                <SvgXml xml={Xmls.gridIcon} />
+                <TouchableOpacity onPress={toggleState}>
+                  <SvgXml xml={isGridView ? Xmls.listIcon : Xmls.gridIcon} />
+                </TouchableOpacity>
               </View>
 
               {/* List */}
-              <ScrollView style={{marginBottom: 4}}>
-                {list.map((item, index) => (
-                  <Swipeable
-                    key={index}
-                    renderLeftActions={() => renderLeftActions(item)}>
-                    <View style={style.recordingItem}>
-                      <View style={style.recordingItemHeader}>
-                        <Text style={{color: '#0D0F10'}}>New Recording</Text>
+              {isGridView ? (
+                <View
+                  style={{
+                    paddingHorizontal: 24,
+                    flexDirection: 'row',
+                    flexWrap: 'wrap',
+                    justifyContent: 'space-between',
+                  }}>
+                  {list.map((item, index) => {
+                    return (
+                      <View key={index} style={style.girdSection}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: 32,
+                              width: 32,
+                              borderRadius: 8,
+                              backgroundColor: '#F5F6F8',
+                            }}>
+                            <SvgXml xml={Xmls.microPhoneSmall} />
+                          </View>
+                          <TouchableOpacity
+                            style={{padding: 8}}
+                            onPress={() => moreIconRef.current.show()}>
+                            <SvgXml xml={Xmls.moreIcon} />
+                          </TouchableOpacity>
+                        </View>
+                        <Text style={{color: '#000'}}>New Recording</Text>
                         <Text style={{color: '#7C7F83', fontSize: 12}}>
                           New Recording
                         </Text>
-                      </View>
-                      <Text style={style.recordingText}>
-                        Volutpat sed sit orci nisi. Quis donec aliquet id...
-                      </Text>
-                      <Text style={style.tagsText}>#Tags #Tags</Text>
-                      <View style={style.recordingItemFooter}>
-                        <View style={style.folderBox}>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            alignSelf: 'flex-start',
+                            padding: 4,
+                            borderWidth: 1,
+                            borderColor: '#E2E5E9',
+                            borderRadius: 8,
+                            marginTop: 4,
+                          }}>
                           <SvgXml xml={Xmls.folderIcon} />
                           <Text style={{color: '#0D0F10', marginLeft: 4}}>
                             Folder
                           </Text>
                         </View>
-                        <SvgXml xml={Xmls.voicePlayGrayIcon} />
                       </View>
-                    </View>
-                  </Swipeable>
-                ))}
-              </ScrollView>
+                    );
+                  })}
+                </View>
+              ) : (
+                <ScrollView style={{marginBottom: 4}}>
+                  {list.map((item, index) => (
+                    <Swipeable
+                      key={index}
+                      renderLeftActions={() => renderLeftActions(item)}>
+                      <View style={style.recordingItem}>
+                        <View style={style.recordingItemHeader}>
+                          <Text style={{color: '#0D0F10'}}>New Recording</Text>
+                          <Text style={{color: '#7C7F83', fontSize: 12}}>
+                            New Recording
+                          </Text>
+                        </View>
+                        <Text style={style.recordingText}>
+                          Volutpat sed sit orci nisi. Quis donec aliquet id...
+                        </Text>
+                        <Text style={style.tagsText}>#Tags #Tags</Text>
+                        <View style={style.recordingItemFooter}>
+                          <View style={style.folderBox}>
+                            <SvgXml xml={Xmls.folderIcon} />
+                            <Text style={{color: '#0D0F10', marginLeft: 4}}>
+                              Folder
+                            </Text>
+                          </View>
+                          <SvgXml xml={Xmls.voicePlayGrayIcon} />
+                        </View>
+                      </View>
+                    </Swipeable>
+                  ))}
+                </ScrollView>
+              )}
             </>
           )}
         </View>
@@ -329,10 +434,7 @@ export default function Home({navigation}) {
         </Text>
         {data.map((item, index) => (
           <TouchableOpacity
-            onPress={() => {
-              moreIconRef.current?.hide();
-              setIsModalVisible(true);
-            }}
+            onPress={() => item.onPress()}
             key={index}
             style={{
               flexDirection: 'row',
@@ -360,7 +462,7 @@ export default function Home({navigation}) {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  // onPress={handleDiscard}
+                  onPress={() => setIsModalVisible(false)}
                   style={[styles.modalButton, styles.discardButton]}>
                   <Text style={styles.discardButtonText}>Delete</Text>
                 </TouchableOpacity>
@@ -541,6 +643,135 @@ export default function Home({navigation}) {
           </>
         )}
       </ActionSheet>
+      <ActionSheet
+        ref={tagRef}
+        gestureEnabled
+        containerStyle={{
+          height: '95%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 12,
+          }}>
+          <TouchableOpacity onPress={() => tagRef.current?.hide()}>
+            <Text style={{color: '#000'}}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              paddingVertical: 5,
+              paddingHorizontal: 14,
+              backgroundColor: '#C0E863',
+              borderRadius: 8,
+            }}>
+            <Text style={{color: '#000'}}>Save</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={style.inputFields}>
+          <SvgXml xml={Xmls.tagIcon} style={style.starIcon} />
+          <TextInput
+            style={style.input}
+            placeholder="Add tags"
+            placeholderTextColor="#7C7F83"
+          />
+        </View>
+        <Text style={{color: '#7C7F83', marginVertical: 12}}>Suggested</Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <SvgXml xml={Xmls.starIcon} style={style.icon} />
+          <Text style={{color: '#000'}}>Starred</Text>
+        </View>
+      </ActionSheet>
+      <ActionSheet
+        ref={shareRef}
+        gestureEnabled
+        containerStyle={{
+          height: '30%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        <Text style={{color: '#000', marginTop: 12}}>Share</Text>
+        <Text style={{color: '#7C7F83', fontSize: 14}}>
+          Anyone with the link can see the voice note.
+        </Text>
+        <View
+          style={{
+            borderWidth: 1,
+            borderColor: '#D9D9D9',
+            marginTop: 12,
+            borderRadius: 8,
+          }}>
+          <Text
+            style={{
+              color: '#0D0F10',
+              marginVertical: 12,
+              width: '100%',
+              textAlign: 'center',
+            }}>
+            {`https://www.voicenotes.com/3072002`}
+          </Text>
+        </View>
+        {isLinkCopied ? (
+          <TouchableOpacity
+            onPress={() => setIsLinkCopied(false)}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#C0E863',
+              paddingVertical: 12,
+              borderRadius: 8,
+              marginVertical: 16,
+              alignItems: 'center',
+            }}>
+            <SvgXml xml={Xmls.copyIcon} style={style.icon} />
+            <Text style={style.continueButtonText}>Copy Link</Text>
+          </TouchableOpacity>
+        ) : (
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+            }}>
+            <TouchableOpacity
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#C0E863',
+                paddingVertical: 12,
+                borderRadius: 8,
+                marginVertical: 16,
+                alignItems: 'center',
+                width: '48%',
+              }}>
+              <SvgXml xml={Xmls.copyIcon} style={style.icon} />
+              <Text style={style.continueButtonText}>Copy Link</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                borderWidth: 1,
+                paddingVertical: 12,
+                borderRadius: 8,
+                marginVertical: 16,
+                alignItems: 'center',
+                width: '48%',
+              }}>
+              <Text style={style.continueButtonText}>Unpublish</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ActionSheet>
     </>
   );
 }
@@ -638,8 +869,8 @@ const style = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#E2E5E9',
-    padding: 2,
-    paddingHorizontal: 4,
+    padding: 4,
+    paddingHorizontal: 6,
     borderRadius: 8,
     alignSelf: 'flex-start',
   },
@@ -696,6 +927,18 @@ const style = StyleSheet.create({
     height: 43,
     fontSize: 16,
     color: '#000',
+  },
+
+  girdSection: {
+    borderWidth: 1,
+    borderColor: '#E2E5E9',
+    borderRadius: 12,
+    paddingLeft: 12,
+    paddingTop: 8,
+    paddingRight: 4,
+    paddingBottom: 12,
+    width: '48%',
+    marginVertical: 6,
   },
 });
 

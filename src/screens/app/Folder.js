@@ -18,11 +18,15 @@ export default function Folder({navigation}) {
   const [isGridView, setIsGridView] = useState(false);
   const [isLinkCopied, setIsLinkCopied] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [folderName, setFolderName] = useState('');
   const createFolderRef = useRef(null);
   const moreIconRef = useRef(null);
   const createSectionRef = useRef(null);
   const moveToFolderRef = useRef(null);
   const shareRef = useRef(null);
+  const recentRef = useRef(null);
+
+  const recentOptions = ['Daily', 'Weekly', 'Monthly'];
 
   const data = [
     {
@@ -122,7 +126,7 @@ export default function Folder({navigation}) {
           <View>
             <View style={style.sectionHeader}>
               <TouchableOpacity
-                // onPress={() => recentRef.current?.show()}
+                onPress={() => recentRef.current?.show()}
                 style={{flexDirection: 'row', alignItems: 'center'}}>
                 <SvgXml xml={Xmls.recentIcon} />
                 <Text style={{color: '#000', marginLeft: 4}}>Recents</Text>
@@ -291,6 +295,8 @@ export default function Folder({navigation}) {
           style={style.createFolderInput}
           placeholder="Enter text"
           placeholderTextColor="#7C7F83"
+          value={folderName}
+          onChangeText={text => setFolderName(text)}
         />
         <View
           style={{
@@ -303,8 +309,13 @@ export default function Folder({navigation}) {
         </View>
         <TouchableOpacity
           onPress={() => {
-            createFolderRef.current.hide();
-            setCreateFolderPressed(true);
+            if (folderName.trim().length > 0) {
+              createFolderRef.current.hide();
+              setCreateFolderPressed(true);
+              setFolderName('');
+            } else {
+              // alert('Folder name cannot be empty.');
+            }
           }}
           style={style.saveButton}>
           <Text style={{color: '#000'}}>Create Folder</Text>
@@ -543,6 +554,35 @@ export default function Folder({navigation}) {
             </TouchableOpacity>
           </View>
         )}
+      </ActionSheet>
+
+      <ActionSheet
+        ref={recentRef}
+        gestureEnabled
+        containerStyle={{
+          height: '25%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        {recentOptions.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              recentRef.current?.hide();
+            }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: 12,
+              borderRadius: 8,
+              marginVertical: 4,
+            }}>
+            <Text style={{color: '#000'}}>{item}</Text>
+          </TouchableOpacity>
+        ))}
       </ActionSheet>
     </>
   );

@@ -146,6 +146,47 @@ export default function Uploading({navigation, route}) {
   };
 
   useEffect(() => {
+    let isMounted = true;
+
+    const getDuration = async () => {
+      try {
+        await audioRecorderPlayer.startPlayer(route.params.recordingPath);
+        audioRecorderPlayer.setVolume(0); // mute so user doesn't hear
+
+        playerListenerRef.current = audioRecorderPlayer.addPlayBackListener(
+          e => {
+            const total = e.duration;
+
+            // if (!isNaN(total) && isMounted) {
+            //   setDuration(audioRecorderPlayer.mmssss(total));
+            // }
+
+            if (!isNaN(total) && isMounted) {
+              setDuration(formatTime(total));
+            }
+
+            // Stop immediately after getting duration
+            audioRecorderPlayer.stopPlayer();
+            audioRecorderPlayer.removePlayBackListener();
+            playerListenerRef.current = null;
+          },
+        );
+      } catch (error) {
+        console.error('Error getting duration:', error);
+      }
+    };
+
+    getDuration();
+
+    return () => {
+      isMounted = false;
+      audioRecorderPlayer.stopPlayer();
+      audioRecorderPlayer.removePlayBackListener();
+      playerListenerRef.current = null;
+    };
+  }, [route.params.recordingPath]);
+
+  useEffect(() => {
     return () => {
       onStopPlay();
     };
@@ -162,8 +203,11 @@ export default function Uploading({navigation, route}) {
 
         if (isNaN(current) || isNaN(total)) return;
 
-        setPlaybackTime(audioRecorderPlayer.mmssss(current));
-        setDuration(audioRecorderPlayer.mmssss(total));
+        // setPlaybackTime(audioRecorderPlayer.mmssss(current));
+        // setDuration(audioRecorderPlayer.mmssss(total));
+
+        setPlaybackTime(formatTime(current));
+        setDuration(formatTime(total));
 
         const safeProgress = total > 0 ? current / total : 0;
         setProgress(safeProgress);
@@ -238,6 +282,14 @@ export default function Uploading({navigation, route}) {
     setShowCreateOptions(false);
     setTranscript(true);
     toggleState();
+  };
+  const formatTime = millis => {
+    const totalSeconds = Math.floor(millis / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
   };
 
   return (

@@ -27,7 +27,7 @@ const audioRecorderPlayer = new AudioRecorderPlayer();
 
 export default function Recording({navigation}) {
   const [recordSecs, setRecordSecs] = useState(0);
-  const [recordTime, setRecordTime] = useState('00:00:00');
+  const [recordTime, setRecordTime] = useState('00:00');
   const [isRecording, setIsRecording] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const [recordingPath, setRecordingPath] = useState('');
@@ -99,7 +99,7 @@ export default function Recording({navigation}) {
       audioRecorderPlayer.addRecordBackListener(e => {
         const current = Math.floor(e.currentPosition);
         setRecordSecs(current);
-        setRecordTime(audioRecorderPlayer.mmssss(current));
+        setRecordTime(formatTime(current));
       });
 
       setIsRecording(true);
@@ -138,7 +138,7 @@ export default function Recording({navigation}) {
       const result = await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
       setRecordSecs(0);
-      setRecordTime('00:00:00');
+      setRecordTime('00:00');
       setIsRecorded(true);
       return result;
     } catch (err) {
@@ -181,7 +181,7 @@ export default function Recording({navigation}) {
       await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
       setRecordSecs(0);
-      setRecordTime('00:00:00');
+      setRecordTime('00:00');
       setIsRecorded(false);
 
       if (recordingPath && (await RNFS.exists(recordingPath))) {
@@ -202,6 +202,13 @@ export default function Recording({navigation}) {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+
+  const formatTime = millis => {
+    const totalSeconds = Math.floor(millis / 1000);
+    const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
+    return `${minutes}:${seconds}`;
   };
 
   return (

@@ -22,9 +22,12 @@ export default function InsideFolder({navigation, route}) {
   const moveToFolderRef = useRef(null);
   const shareRef = useRef(null);
   const createSectionRef = useRef(null);
+  const recentRef = useRef(null);
 
   const folderName = route?.params?.userData?.folderName;
   const recordings = [1, 2, 3, 4];
+  const recentOptions = ['Daily', 'Weekly', 'Monthly'];
+
   const gridSetionData = [
     {title: 'Meeting', text: '2 sections '},
     {title: 'Review Freelance', text: '24 Voicenote'},
@@ -128,7 +131,7 @@ export default function InsideFolder({navigation, route}) {
 
         <View style={style.sectionHeader}>
           <TouchableOpacity
-            // onPress={() => recentRef.current?.show()}
+            onPress={() => recentRef.current?.show()}
             style={{flexDirection: 'row', alignItems: 'center'}}>
             <SvgXml xml={Xmls.recentIcon} />
             <Text style={{color: '#000', marginLeft: 4}}>Recents</Text>
@@ -169,8 +172,7 @@ export default function InsideFolder({navigation, route}) {
                     </View>
                     <TouchableOpacity
                       style={{padding: 8}}
-                      // onPress={() => moreIconRef.current.show()}
-                    >
+                      onPress={() => moreIconRef.current.show()}>
                       <SvgXml xml={Xmls.moreIcon} />
                     </TouchableOpacity>
                   </View>
@@ -474,6 +476,34 @@ export default function InsideFolder({navigation, route}) {
           <Text style={{color: '#000'}}>Create Section</Text>
         </TouchableOpacity>
       </ActionSheet>
+      <ActionSheet
+        ref={recentRef}
+        gestureEnabled
+        containerStyle={{
+          height: '25%',
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        {recentOptions.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              recentRef.current?.hide();
+            }}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: 12,
+              borderRadius: 8,
+              marginVertical: 4,
+            }}>
+            <Text style={{color: '#000'}}>{item}</Text>
+          </TouchableOpacity>
+        ))}
+      </ActionSheet>
     </>
   );
 }
@@ -538,6 +568,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 4,
+    paddingHorizontal: 6,
     borderWidth: 1,
     borderColor: '#E2E5E9',
     borderRadius: 8,

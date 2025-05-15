@@ -95,7 +95,7 @@ const style = StyleSheet.create({
     paddingHorizontal: 24,
   },
   img: {
-    width: 75,
-    height: 50,
+    width: 170,
+    height: 170,
   },
 });
