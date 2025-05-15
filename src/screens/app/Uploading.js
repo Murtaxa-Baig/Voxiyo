@@ -44,6 +44,7 @@ export default function Uploading({navigation, route}) {
   const [activeTab, setActiveTab] = useState('Default');
   const [isSection, setIsSection] = useState(true);
   const [selectedOption, setSelectedOption] = useState('Daily');
+  const [isStarred, setIsStarred] = useState(false);
   const playerListenerRef = useRef(null);
   const addToFolderRef = useRef(null);
   const shareRef = useRef(null);
@@ -139,6 +140,9 @@ export default function Uploading({navigation, route}) {
 
   const toggleState = () => {
     setIsCollapsOn(prev => !prev);
+  };
+  const StarredToggleState = () => {
+    setIsStarred(prev => !prev);
   };
 
   useEffect(() => {
@@ -382,7 +386,12 @@ export default function Uploading({navigation, route}) {
                       alignItems: 'center',
                       gap: 4,
                     }}>
-                    <SvgXml style={{marginRight: 4}} xml={Xmls.starIcon} />
+                    <TouchableOpacity onPress={() => StarredToggleState()}>
+                      <SvgXml
+                        style={{padding: 4}}
+                        xml={isStarred ? Xmls.isStarredIcon : Xmls.starIcon}
+                      />
+                    </TouchableOpacity>
                     <TouchableOpacity onPress={() => toggleState()}>
                       <SvgXml
                         style={{marginRight: 4}}

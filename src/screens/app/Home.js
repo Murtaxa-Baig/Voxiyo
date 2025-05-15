@@ -8,22 +8,24 @@ import {
   ScrollView,
   Modal,
 } from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Swipeable} from 'react-native-gesture-handler';
 import Xmls from '../../utils/Xmls';
 import ActionSheet from 'react-native-actions-sheet';
 
 export default function Home({navigation}) {
-  const [list, setList] = useState([1, 2]);
+  const [list, setList] = useState([1, 2, 3]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSection, setIsSection] = useState(true);
+  const [isSubmitFeedback, setIsSubmitFeedback] = useState(false);
 
   const recentRef = useRef(null);
   const moreIconRef = useRef(null);
   const addToFolderRef = useRef(null);
   const createFolderRef = useRef(null);
   const createSectionRef = useRef(null);
+  const feedbackRef = useRef(null);
 
   const recentOptions = ['Daily', 'Weekly', 'Monthly'];
   const data = [
@@ -33,6 +35,13 @@ export default function Home({navigation}) {
     {icon: Xmls.ShareIcon, text: 'Share'},
     {icon: Xmls.deleteIcon, text: 'Delete'},
   ];
+
+  useEffect(() => {
+    const oddLengths = [3, 5, 7, 9, 11, 13, 15];
+    if (oddLengths.includes(list.length)) {
+      feedbackRef.current.show();
+    }
+  }, []);
 
   const renderLeftActions = itemId => (
     <View style={{flexDirection: 'row', height: '100%'}}>
@@ -441,6 +450,96 @@ export default function Home({navigation}) {
         <TouchableOpacity style={style.saveButton}>
           <Text style={{color: '#000'}}>Create Section</Text>
         </TouchableOpacity>
+      </ActionSheet>
+      <ActionSheet
+        ref={feedbackRef}
+        gestureEnabled
+        containerStyle={{
+          height: `${isSubmitFeedback ? '28%' : '40%'}`,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          backgroundColor: '#fff',
+          paddingHorizontal: 24,
+        }}>
+        {isSubmitFeedback ? (
+          <View
+          // style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Text
+              style={{
+                color: '#0D0F10',
+                fontSize: 20,
+                marginTop: 16,
+                textAlign: 'center',
+              }}>
+              Thank you!
+            </Text>
+            <Text
+              style={{
+                color: '#7C7F83',
+                marginVertical: 12,
+                textAlign: 'center',
+              }}>
+              Your feedback helps us improve. We appreciate the time you took.
+            </Text>
+            <TouchableOpacity
+              onPress={() => feedbackRef.current.hide()}
+              style={style.saveButton}>
+              <Text style={{color: '#000'}}>Done</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <Text style={{color: '#0D0F10', fontSize: 20}}>
+              Rate your experience
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginVertical: 6,
+              }}>
+              {['😒  Bad', '🙂  Decent', '😍  Love it!'].map((item, index) => {
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '32%',
+                      borderWidth: 1,
+                      borderColor: '#E2E5E9',
+                      borderRadius: 8,
+                      padding: 4,
+                      height: 38,
+                    }}>
+                    <Text style={{color: '#0D0F10'}}>{item}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <TextInput
+              style={{
+                borderWidth: 1,
+                borderColor: '#E2E5E9',
+                borderRadius: 8,
+                height: 100,
+                paddingHorizontal: 12,
+                textAlignVertical: 'top',
+              }}
+              placeholder="Tell us more (Optional)"
+              placeholderTextColor="#999"
+              multiline={true}
+            />
+            <TouchableOpacity
+              onPress={() => setIsSubmitFeedback(true)}
+              style={style.saveButton}>
+              <Text style={{color: '#000'}}>Submit feedback</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </ActionSheet>
     </>
   );
